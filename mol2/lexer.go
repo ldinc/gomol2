@@ -1,20 +1,21 @@
 package mol2
 
 import (
-	"bytes"
-	"fmt"
 	"errors"
+	"unicode/utf8"
 )
 
 type Lexer struct {
-	buf *bytes.Buffer
-	line, column int
+	buf []byte
+	line, column, pos int
+	column_new, line_new, pos_new int
 }
 
-func NewLexer(buffer *bytes.Buffer) *Lexer {
+func NewLexer(buffer []byte) *Lexer {
 	lex := new(Lexer)
 	lex.line = 0
 	lex.column = 0
+	lex.pos = 0
 	lex.buf = buffer
 
 	return lex
@@ -28,33 +29,46 @@ func (lex *Lexer) SkipWS() (bool, int) {
 	return false, 0
 }
 
-func (lex *Lexer) unreadRunes(count int) {
-	for i := 0; i < count; i++ {
-		fmt.Println(i)
-		err := lex.buf.UnreadRune()
-		if err != nil {
-			panic(err)
-		}
+func (lex *Lexer) readRune() rune {
+	r, size := utf8.DecodeRune(lex.buf[lex.pos_new:])
+	lex.pos_new += size
+	if r == '\n' {
+		lex.column_new = 0
+		lex.line_new ++
+	} else {
+		lex.column_new ++
 	}
+
+	return r
+}
+
+func (lex *Lexer) fixCoords() {
+	lex.pos = lex.pos_new
+	lex.line = lex.line_new
+	lex.column = lex.column_new
+}
+
+func (lex *Lexer) dropCoords() {
+	lex.pos_new = lex.pos
+	lex.line_new = lex.line
+	lex.column_new = lex.column
 }
 
 func (lex *Lexer) NextAtom() (bool, error) {
 	pattern := "@<TRIPOS>ATOM"
 	err_text := "was expected '" + pattern + "'"
-	if lex.buf.Len() < len(pattern) {
+	if (len(lex.buf) - lex.pos) < len(pattern) {
 		return false, errors.New(err_text)
 	}
-	for count, r := range pattern {
-		buf_rune, _, err := lex.buf.ReadRune()
-		if err != nil {
-			return false, err
-		}
+	for _, r := range pattern {
+		buf_rune := lex.readRune()
 		if r != buf_rune {
-			lex.unreadRunes(count)
+			lex.dropCoords()
 			return false, errors.New(err_text)
 		}
 	}
 	lex.column += len(pattern)
+	lex.pos += len(pattern)
 
 	return true, nil
 }
