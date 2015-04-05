@@ -48,7 +48,11 @@ func NewAtomSubStructure(id int,
 func (atom Atom) String() string {
 		buffer := ""
 		buffer += "id = " + strconv.FormatInt(int64(atom.id), 10) + "\n"
-		buffer += "\tname" + atom.name + "\n"
+		buffer += "name = " + atom.name + "\n"
+		buffer += "coords = (" + strconv.FormatFloat(atom.x, 'e', -1, 64) + ","
+		buffer += strconv.FormatFloat(atom.y, 'e', -1, 64) + ","
+		buffer += strconv.FormatFloat(atom.z, 'e', -1, 64) + ")\n"
+
 
 		return buffer
 }
@@ -76,6 +80,30 @@ func AtomParse(lex *Lexer) *Atom {
 			return nil
 		}
 		atom.name = name
+		ok, f, err := lex.nextReal()
+		if err != nil {
+			panic(err)
+		}
+		if !ok {
+				return nil
+		}
+		atom.x = f;
+		ok, f, err := lex.nextReal()
+		if err != nil {
+			panic(err)
+		}
+		if !ok {
+				return nil
+		}
+		atom.y = f;
+		ok, f, err := lex.nextReal()
+		if err != nil {
+			panic(err)
+		}
+		if !ok {
+				return nil
+		}
+		atom.z = f;
 
 		return atom
 	}
