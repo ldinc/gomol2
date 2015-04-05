@@ -114,7 +114,7 @@ var TypesNames []string = []string {
 }
 
 func AtomTypeGetByString(atype string) int {
-	for code := 0; i < len(TypesNames); code++ {
+	for code := 0; code < len(TypesNames); code++ {
 			if TypesNames[code] == atype {
 				return code
 			}
