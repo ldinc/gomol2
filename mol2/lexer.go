@@ -2,6 +2,7 @@ package mol2
 
 import (
 	"errors"
+	"unicode"
 	"unicode/utf8"
 )
 
@@ -67,8 +68,21 @@ func (lex *Lexer) NextAtom() (bool, error) {
 			return false, errors.New(err_text)
 		}
 	}
-	lex.column += len(pattern)
-	lex.pos += len(pattern)
+	lex.fixCoords()
 
 	return true, nil
+}
+
+func (lex *Lexer) NextId() (bool, string, error) {
+	buf := ""
+	r := lex.readRune()
+	for unicode.IsSpace(r) == false {
+		buf += string(r)
+		r = lex.readRune()
+	}
+	if len(buf) == 0 {
+		return false, "", errors.New("Id was expected")
+	}
+
+	return true, buf, nil
 }
