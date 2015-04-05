@@ -2,6 +2,7 @@ package mol2
 
 import (
 	"errors"
+	"strconv"
 	"unicode"
 	"unicode/utf8"
 )
@@ -55,7 +56,33 @@ func (lex *Lexer) dropCoords() {
 	lex.column_new = lex.column
 }
 
-func (lex *Lexer) NextAtom() (bool, error) {
+type lexerState struct {
+		pos, line, column int
+		pos_new, line_new, column_new int
+}
+
+func (lex *Lexer) pushState() *lexerState {
+	state := new(lexerState)
+	state.pos = lex.pos
+	state.pos_new = lex.pos_new
+	state.line = lex.line
+	state.line_new = lex.line_new
+	state.column = lex.column
+	state.column_new = lex.column_new
+
+	return state
+}
+
+func (lex *Lexer) popState(state *lexerState) {
+	lex.pos = state.pos
+	lex.pos_new = state.pos_new
+	lex.line = state.line
+	lex.line_new = state.line_new
+	lex.column = state.column
+	lex.column_new = state.column_new
+}
+
+func (lex *Lexer) nextAtom() (bool, error) {
 	pattern := "@<TRIPOS>ATOM"
 	err_text := "was expected '" + pattern + "'"
 	if (len(lex.buf) - lex.pos) < len(pattern) {
@@ -73,7 +100,7 @@ func (lex *Lexer) NextAtom() (bool, error) {
 	return true, nil
 }
 
-func (lex *Lexer) NextId() (bool, string, error) {
+func (lex *Lexer) nextId() (bool, string, error) {
 	buf := ""
 	r := lex.readRune()
 	for unicode.IsSpace(r) == false {
@@ -81,9 +108,29 @@ func (lex *Lexer) NextId() (bool, string, error) {
 		r = lex.readRune()
 	}
 	if len(buf) == 0 {
+		lex.dropCoords()
 		return false, "", errors.New("Id was expected")
 	}
 	lex.fixCoords()
 
 	return true, buf, nil
+}
+
+func (lex *Lexer) NextReal() (bool, float64, error) {
+	state := lex.pushState()
+	err_text := "real was expected"
+	ok, id, _ := lex.nextId()
+	if ok {
+		f, err := strconv.ParseFloat(id, 64)
+		if err != nil {
+			lex.popState(state)
+
+			return false, 0.0, errors.New(err_text)
+		}
+
+		return true, f, nil
+	}
+	lex.popState(state)
+
+	return false, 0.0, errors.New(err_text)
 }
