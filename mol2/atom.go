@@ -45,7 +45,10 @@ func NewAtomSubStructure(id int,
 	return sub
 }
 
-func (subst AtomSubStructure) String() string {
+func (subst *AtomSubStructure) String() string {
+	if subst == nil {
+			return "none"
+	}
 	buffer := ""
 	buffer += "{id = " + strconv.FormatInt(int64(subst.id), 10) + ";"
 	buffer += "name = " + subst.name + ";"
