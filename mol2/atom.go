@@ -76,6 +76,8 @@ func AtomParse(lex *Lexer) *Atom {
 			return nil
 		}
 		atom.name = name
+
+		return atom
 	}
 
 	return nil
