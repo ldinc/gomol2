@@ -19,6 +19,10 @@ func NewLexer(buffer *bytes.Buffer) *Lexer {
 	return lex
 }
 
+func (lex *Lexer) Coords() (int, int) {
+	return lex.line, lex.column
+}
+
 func (lex *Lexer) NextAtom() (bool, error) {
 	pattern := "@<TRIPOS>ATOM"
 	err_text := "was expected '" + pattern + "'"
