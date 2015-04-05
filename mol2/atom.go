@@ -50,9 +50,9 @@ func (subst *AtomSubStructure) String() string {
 			return "none"
 	}
 	buffer := ""
-	buffer += "{id = " + strconv.FormatInt(int64(subst.id), 10) + ";"
-	buffer += "name = " + subst.name + ";"
-	buffer += "charge = " + strconv.FormatFloat(subst.charge, 'e', -1, 64) + ";"
+	buffer += "{id = " + strconv.FormatInt(int64(subst.id), 10) + "; "
+	buffer += "name = " + subst.name + "; "
+	buffer += "charge = " + strconv.FormatFloat(subst.charge, 'e', -1, 64)
 	// TODO: add status to display
 	buffer += "}"
 
@@ -74,65 +74,57 @@ func (atom Atom) String() string {
 
 func AtomParse(lex *Lexer) *Atom {
 	atom := new(Atom)
-	ok, err := lex.nextAtom()
+	ok, id, err := lex.nextInt()
 	if err != nil {
 		panic(err)
 	}
-	if ok {
-		ok, id, err := lex.nextInt()
-		if err != nil {
-			panic(err)
-		}
-		if !ok {
-			return nil
-		}
-		atom.id = id
-		ok, name, err := lex.nextId()
-		if err != nil {
-			panic(err)
-		}
-		if !ok {
-			return nil
-		}
-		atom.name = name
-		ok, f, err := lex.nextReal()
-		if err != nil {
-			panic(err)
-		}
-		if !ok {
-				return nil
-		}
-		atom.x = f;
-		ok, f, err = lex.nextReal()
-		if err != nil {
-			panic(err)
-		}
-		if !ok {
-				return nil
-		}
-		atom.y = f;
-		ok, f, err = lex.nextReal()
-		if err != nil {
-			panic(err)
-		}
-		if !ok {
-				return nil
-		}
-		atom.z = f;
-		ok, atype, err := lex.nextId()
-		if err != nil {
-			panic(err)
-		}
-		if !ok {
-			return nil
-		}
-		atom.atype = AtomTypeGetByString(atype)
-		atom.subst = AtomSubStructureParse(lex)
-
-		return atom
+	if !ok {
+		return nil
 	}
+	atom.id = id
+	ok, name, err := lex.nextId()
+	if err != nil {
+		panic(err)
+	}
+	if !ok {
+		return nil
+	}
+	atom.name = name
+	ok, f, err := lex.nextReal()
+	if err != nil {
+		panic(err)
+	}
+	if !ok {
+			return nil
+	}
+	atom.x = f;
+	ok, f, err = lex.nextReal()
+	if err != nil {
+		panic(err)
+	}
+	if !ok {
+			return nil
+	}
+	atom.y = f;
+	ok, f, err = lex.nextReal()
+	if err != nil {
+		panic(err)
+	}
+	if !ok {
+			return nil
+	}
+	atom.z = f;
+	ok, atype, err := lex.nextId()
+	if err != nil {
+		panic(err)
+	}
+	if !ok {
+		return nil
+	}
+	atom.atype = AtomTypeGetByString(atype)
+	atom.subst = AtomSubStructureParse(lex)
 
-	return nil
+	return atom
 }
 
 func AtomSubStructureParse(lex *Lexer) *AtomSubStructure {
