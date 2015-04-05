@@ -20,7 +20,7 @@ func NewLexer(buffer *bytes.Buffer) *Lexer {
 }
 
 func (lex *Lexer) NextAtom() (bool, error) {
-	pattern := "@<TRIPOS>ATOiM"
+	pattern := "@<TRIPOS>ATOM"
 	err_text := "was expected '" + pattern + "'"
 	if lex.buf.Len() < len(pattern) {
 		return false, errors.New(err_text)
