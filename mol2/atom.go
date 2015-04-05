@@ -88,7 +88,7 @@ func AtomParse(lex *Lexer) *Atom {
 				return nil
 		}
 		atom.x = f;
-		ok, f, err := lex.nextReal()
+		ok, f, err = lex.nextReal()
 		if err != nil {
 			panic(err)
 		}
@@ -96,7 +96,7 @@ func AtomParse(lex *Lexer) *Atom {
 				return nil
 		}
 		atom.y = f;
-		ok, f, err := lex.nextReal()
+		ok, f, err = lex.nextReal()
 		if err != nil {
 			panic(err)
 		}
