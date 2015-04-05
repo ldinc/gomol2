@@ -108,7 +108,33 @@ func (lex *Lexer) popState(state *lexerState) {
 	lex.column_new = state.column_new
 }
 
-func (lex *Lexer) NextAtom() (bool, error) {
+func (lex *Lexer) nextMolecule() (bool, error) {
+	lex.SkipWS()
+	state := lex.pushState()
+	pattern := "@<TRIPOS>MOLECULE"
+	err_text := "was expected @<TRIPOS>MOLECULE"
+	ok, str, err := lex.nextId()
+	if !ok {
+		lex.popState(state)
+
+		return false, errors.New(err_text)
+	}
+	if err != nil {
+		lex.popState(state)
+
+		return false, err
+	}
+	if str != pattern {
+		lex.popState(state)
+
+		return false, errors.New(err_text)
+	}
+	lex.fixCoords()
+
+	return true, nil
+}
+
+func (lex *Lexer) nextAtom() (bool, error) {
 	lex.SkipWS()
 	pattern := "@<TRIPOS>ATOM"
 	err_text := "was expected '" + pattern + "'"
@@ -142,6 +168,18 @@ func (lex *Lexer) nextId() (bool, string, error) {
 	lex.fixCoords()
 
 	return true, buf, nil
+}
+
+func (lex *Lexer) nextLine() string {
+	buffer := ""
+	r := lex.readRune()
+	for r != '\n' {
+		buffer += string(r)
+		r = lex.readRune()
+	}
+	lex.fixCoords()
+
+	return buffer
 }
 
 func (lex *Lexer) nextNL() (bool, error) {

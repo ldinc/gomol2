@@ -74,7 +74,7 @@ func (atom Atom) String() string {
 
 func AtomParse(lex *Lexer) *Atom {
 	atom := new(Atom)
-	ok, err := lex.NextAtom()
+	ok, err := lex.nextAtom()
 	if err != nil {
 		panic(err)
 	}
@@ -136,32 +136,32 @@ func AtomParse(lex *Lexer) *Atom {
 }
 
 func AtomSubStructureParse(lex *Lexer) *AtomSubStructure {
-		ok, err := lex.nextNL()
-		if ok {
-			return nil
-		}
-		ok, id, err := lex.nextInt()
-		if err != nil {
-			panic(err)
-		}
-		if !ok {
-			return nil
-		}
-		ok, name, err := lex.nextId()
-		if err != nil {
-			panic(err)
-		}
-		if !ok {
-			return nil
-		}
-		ok, charge, err := lex.nextReal()
-		if err != nil {
-			panic(err)
-		}
-		if !ok {
-			return nil
-		}
-		// TODO: add status parsing
+	ok, err := lex.nextNL()
+	if ok {
+		return nil
+	}
+	ok, id, err := lex.nextInt()
+	if err != nil {
+		panic(err)
+	}
+	if !ok {
+		return nil
+	}
+	ok, name, err := lex.nextId()
+	if err != nil {
+		panic(err)
+	}
+	if !ok {
+		return nil
+	}
+	ok, charge, err := lex.nextReal()
+	if err != nil {
+		panic(err)
+	}
+	if !ok {
+		return nil
+	}
+	// TODO: add status parsing
 
-		return NewAtomSubStructure(id, name, charge, 0)
+	return NewAtomSubStructure(id, name, charge, 0)
 }
