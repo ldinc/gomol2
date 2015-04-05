@@ -6,11 +6,11 @@ import (
 )
 
 type Lexer struct {
-	buf bytes.Buffer
+	buf *bytes.Buffer
 	line, column int
 }
 
-func NewLexer(buffer bytes.Buffer) *Lexer {
+func NewLexer(buffer *bytes.Buffer) *Lexer {
 	lex := new(Lexer)
 	lex.line = 0
 	lex.column = 0
