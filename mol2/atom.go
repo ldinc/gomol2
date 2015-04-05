@@ -1,5 +1,9 @@
 package mol2
 
+import (
+	"strconv"
+)
+
 type Atom struct {
 	id int
 	name string
@@ -39,4 +43,40 @@ func NewAtomSubStructure(id int,
 	sub.id = id
 
 	return sub
+}
+
+func (atom Atom) String() string {
+		buffer := ""
+		buffer += "id = " + strconv.FormatInt(int64(atom.id), 10) + "\n"
+		buffer += "\tname" + atom.name + "\n"
+
+		return buffer
+}
+
+func AtomParse(lex *Lexer) *Atom {
+	atom := new(Atom)
+	ok, err := lex.NextAtom()
+	if err != nil {
+		panic(err)
+	}
+	if ok {
+		ok, id, err := lex.nextInt()
+		if err != nil {
+			panic(err)
+		}
+		if !ok {
+			return nil
+		}
+		atom.id = id
+		ok, name, err := lex.nextId()
+		if err != nil {
+			panic(err)
+		}
+		if !ok {
+			return nil
+		}
+		atom.name = name
+	}
+
+	return nil
 }

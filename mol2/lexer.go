@@ -28,7 +28,24 @@ func (lex *Lexer) Coords() (int, int) {
 }
 
 func (lex *Lexer) SkipWS() (bool, int) {
-	return false, 0
+	state := lex.pushState()
+	size := 0
+	r := lex.readRune()
+	for unicode.IsSpace(r) {
+		state.update(*lex)
+		size ++
+		r = lex.readRune()
+	}
+	lex.popState(state)
+	if size > 0 {
+		lex.fixCoords()
+
+		return true, size
+	} else {
+		lex.popState(state)
+
+		return false, 0
+	}
 }
 
 func (lex *Lexer) readRune() rune {
@@ -73,6 +90,15 @@ func (lex *Lexer) pushState() *lexerState {
 	return state
 }
 
+func (state *lexerState) update(lex Lexer) {
+	state.pos = lex.pos
+	state.pos_new = lex.pos_new
+	state.line = lex.line
+	state.line_new = lex.line_new
+	state.column = lex.column
+	state.column_new = lex.column_new
+}
+
 func (lex *Lexer) popState(state *lexerState) {
 	lex.pos = state.pos
 	lex.pos_new = state.pos_new
@@ -82,7 +108,8 @@ func (lex *Lexer) popState(state *lexerState) {
 	lex.column_new = state.column_new
 }
 
-func (lex *Lexer) nextAtom() (bool, error) {
+func (lex *Lexer) NextAtom() (bool, error) {
+	lex.SkipWS()
 	pattern := "@<TRIPOS>ATOM"
 	err_text := "was expected '" + pattern + "'"
 	if (len(lex.buf) - lex.pos) < len(pattern) {
@@ -101,6 +128,7 @@ func (lex *Lexer) nextAtom() (bool, error) {
 }
 
 func (lex *Lexer) nextId() (bool, string, error) {
+	lex.SkipWS()
 	buf := ""
 	r := lex.readRune()
 	for unicode.IsSpace(r) == false {
@@ -116,7 +144,24 @@ func (lex *Lexer) nextId() (bool, string, error) {
 	return true, buf, nil
 }
 
-func (lex *Lexer) NextReal() (bool, float64, error) {
+func (lex *Lexer) nextNL() (bool, error) {
+	state := lex.pushState()
+	r := lex.readRune()
+	for unicode.IsSpace(r) {
+		if r == '\n' {
+			lex.fixCoords()
+
+			return true, nil
+		}
+		r = lex.readRune()
+	}
+	lex.popState(state)
+
+	return false, nil
+}
+
+func (lex *Lexer) nextReal() (bool, float64, error) {
+	lex.SkipWS()
 	state := lex.pushState()
 	err_text := "real was expected"
 	ok, id, _ := lex.nextId()
@@ -127,10 +172,32 @@ func (lex *Lexer) NextReal() (bool, float64, error) {
 
 			return false, 0.0, errors.New(err_text)
 		}
+		lex.fixCoords()
 
 		return true, f, nil
 	}
 	lex.popState(state)
 
 	return false, 0.0, errors.New(err_text)
+}
+
+func (lex *Lexer) nextInt() (bool, int, error) {
+	lex.SkipWS()
+	state := lex.pushState()
+	err_text := "int was expected"
+	ok, id, _ := lex.nextId()
+	if ok {
+		i, err := strconv.ParseInt(id, 10, 0)
+		if err != nil {
+			lex.popState(state)
+
+			return false, 0, errors.New(err_text)
+		}
+		lex.fixCoords()
+
+		return true, int(i), nil
+	}
+	lex.popState(state)
+
+	return false, 0, errors.New(err_text)
 }
