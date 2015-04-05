@@ -29,7 +29,7 @@ func (lex *Lexer) SkipWS() (bool, int) {
 
 func (lex *Lexer) unreadRunes(count int) {
 	for i := 0; i < count; i++ {
-		err = lex.buf.UnreadRune()
+		err := lex.buf.UnreadRune()
 		if err != nil {
 			panic(err)
 		}
