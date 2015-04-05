@@ -45,16 +45,28 @@ func NewAtomSubStructure(id int,
 	return sub
 }
 
-func (atom Atom) String() string {
-		buffer := ""
-		buffer += "id = " + strconv.FormatInt(int64(atom.id), 10) + "\n"
-		buffer += "name = " + atom.name + "\n"
-		buffer += "coords = (" + strconv.FormatFloat(atom.x, 'e', -1, 64) + ","
-		buffer += strconv.FormatFloat(atom.y, 'e', -1, 64) + ","
-		buffer += strconv.FormatFloat(atom.z, 'e', -1, 64) + ")\n"
-		buffer += AtomTypeToString(atom.atype)
+func (subst AtomSubStructure) String() string {
+	buffer := ""
+	buffer += "{id = " + strconv.FormatInt(int64(subst.id), 10) + ";"
+	buffer += "name = " + subst.name + ";"
+	buffer += "charge = " + strconv.FormatFloat(subst.charge, 'e', -1, 64) + ";"
+	// TODO: add status to display
+	buffer += "}"
 
-		return buffer
+	return buffer
+}
+
+func (atom Atom) String() string {
+	buffer := ""
+	buffer += "id = " + strconv.FormatInt(int64(atom.id), 10) + "\n"
+	buffer += "name = " + atom.name + "\n"
+	buffer += "coords = (" + strconv.FormatFloat(atom.x, 'e', -1, 64) + ","
+	buffer += strconv.FormatFloat(atom.y, 'e', -1, 64) + ","
+	buffer += strconv.FormatFloat(atom.z, 'e', -1, 64) + ")\n"
+	buffer += "type = " + AtomTypeToString(atom.atype) + "\n"
+	buffer += "subst = " + atom.subst.String() + "\n"
+
+	return buffer
 }
 
 func AtomParse(lex *Lexer) *Atom {
@@ -112,9 +124,41 @@ func AtomParse(lex *Lexer) *Atom {
 			return nil
 		}
 		atom.atype = AtomTypeGetByString(atype)
+		atom.subst = AtomSubStructureParse(lex)
 
 		return atom
 	}
 
 	return nil
+}
+
+func AtomSubStructureParse(lex *Lexer) *AtomSubStructure {
+		ok, err := lex.nextNL()
+		if !ok {
+			return nil
+		}
+		ok, id, err := lex.nextInt()
+		if err != nil {
+			panic(err)
+		}
+		if !ok {
+			return nil
+		}
+		ok, name, err := lex.nextId()
+		if err != nil {
+			panic(err)
+		}
+		if !ok {
+			return nil
+		}
+		ok, charge, err := lex.nextReal()
+		if err != nil {
+			panic(err)
+		}
+		if !ok {
+			return nil
+		}
+		// TODO: add status parsing
+
+		return NewAtomSubStructure(id, name, charge, 0)
 }
