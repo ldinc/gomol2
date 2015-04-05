@@ -52,7 +52,7 @@ func (atom Atom) String() string {
 		buffer += "coords = (" + strconv.FormatFloat(atom.x, 'e', -1, 64) + ","
 		buffer += strconv.FormatFloat(atom.y, 'e', -1, 64) + ","
 		buffer += strconv.FormatFloat(atom.z, 'e', -1, 64) + ")\n"
-
+		buffer += AtomTypeToString(atom.atype)
 
 		return buffer
 }
@@ -104,6 +104,14 @@ func AtomParse(lex *Lexer) *Atom {
 				return nil
 		}
 		atom.z = f;
+		ok, atype, err := lex.nextId()
+		if err != nil {
+			panic(err)
+		}
+		if !ok {
+			return nil
+		}
+		atom.atype = AtomTypeGetByString(atype)
 
 		return atom
 	}

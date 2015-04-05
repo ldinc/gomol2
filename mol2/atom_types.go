@@ -113,6 +113,20 @@ var TypesNames []string = []string {
 	"Sn",
 }
 
+func AtomTypeGetByString(atype string) int {
+	for code := 0; i < len(TypesNames); code++ {
+			if TypesNames[code] == atype {
+				return code
+			}
+	}
+
+	return -1
+}
+
 func AtomTypeToString(id int) string {
+	if id == -1 {
+		return "error"
+	}
+
 	return TypesNames[id]
 }
