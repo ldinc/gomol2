@@ -137,7 +137,7 @@ func AtomParse(lex *Lexer) *Atom {
 
 func AtomSubStructureParse(lex *Lexer) *AtomSubStructure {
 		ok, err := lex.nextNL()
-		if !ok {
+		if ok {
 			return nil
 		}
 		ok, id, err := lex.nextInt()
