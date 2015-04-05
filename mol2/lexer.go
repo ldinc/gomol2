@@ -83,6 +83,7 @@ func (lex *Lexer) NextId() (bool, string, error) {
 	if len(buf) == 0 {
 		return false, "", errors.New("Id was expected")
 	}
+	lex.fixCoords()
 
 	return true, buf, nil
 }
