@@ -108,11 +108,10 @@ func (lex *Lexer) popState(state *lexerState) {
 	lex.column_new = state.column_new
 }
 
-func (lex *Lexer) nextMolecule() (bool, error) {
+func (lex *Lexer) nextPattern(pattern string) (bool, error) {
 	lex.SkipWS()
 	state := lex.pushState()
-	pattern := "@<TRIPOS>MOLECULE"
-	err_text := "was expected @<TRIPOS>MOLECULE"
+	err_text := "was expected " + pattern
 	ok, str, err := lex.nextId()
 	if !ok {
 		lex.popState(state)
@@ -133,24 +132,16 @@ func (lex *Lexer) nextMolecule() (bool, error) {
 
 	return true, nil
 }
+func (lex *Lexer) nextMolecule() (bool, error) {
+	return lex.nextPattern("@<TRIPOS>MOLECULE")
+}
 
 func (lex *Lexer) nextAtom() (bool, error) {
-	lex.SkipWS()
-	pattern := "@<TRIPOS>ATOM"
-	err_text := "was expected '" + pattern + "'"
-	if (len(lex.buf) - lex.pos) < len(pattern) {
-		return false, errors.New(err_text)
-	}
-	for _, r := range pattern {
-		buf_rune := lex.readRune()
-		if r != buf_rune {
-			lex.dropCoords()
-			return false, errors.New(err_text)
-		}
-	}
-	lex.fixCoords()
+	return lex.nextPattern("@<TRIPOS>ATOM")
+}
 
-	return true, nil
+func (lex *Lexer) nextBond() (bool, error) {
+	return lex.nextPattern("@<TRIPOS>BOND")
 }
 
 func (lex *Lexer) nextId() (bool, string, error) {

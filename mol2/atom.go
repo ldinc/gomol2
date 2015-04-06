@@ -61,13 +61,13 @@ func (subst *AtomSubStructure) String() string {
 
 func (atom Atom) String() string {
 	buffer := ""
-	buffer += "id = " + strconv.FormatInt(int64(atom.id), 10) + "\n"
-	buffer += "name = " + atom.name + "\n"
-	buffer += "coords = (" + strconv.FormatFloat(atom.x, 'e', -1, 64) + ","
+	buffer += strconv.FormatInt(int64(atom.id), 10)
+	buffer += " [" + atom.name + "]["
+	buffer += strconv.FormatFloat(atom.x, 'e', -1, 64) + ","
 	buffer += strconv.FormatFloat(atom.y, 'e', -1, 64) + ","
-	buffer += strconv.FormatFloat(atom.z, 'e', -1, 64) + ")\n"
-	buffer += "type = " + AtomTypeToString(atom.atype) + "\n"
-	buffer += "subst = " + atom.subst.String() + "\n"
+	buffer += strconv.FormatFloat(atom.z, 'e', -1, 64) + "]"
+	buffer += ": " + AtomTypeToString(atom.atype) + " "
+	buffer += "subst = " + atom.subst.String()
 
 	return buffer
 }

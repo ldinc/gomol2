@@ -17,11 +17,11 @@ func (mol *Molecule) String() string {
 	buffer += "charge type: " + MoleculeChargesToString(mol.ctype) + "\n"
 	buffer += "atoms:\n"
 	for _, atom := range mol.atoms {
-		buffer += atom.String()
+		buffer += atom.String() + "\n"
 	}
 	buffer += "bonds:\n"
 	for _, bond := range mol.bonds {
-		buffer += bond.String()
+		buffer += bond.String() + "\n"
 	}
 
 	return buffer
@@ -58,7 +58,6 @@ func MoleculeParse(lex *Lexer) *Molecule {
 	lex.nextInt()
 	lex.nextInt()
 	lex.nextInt()
-	lex.SkipWS()
 	//
 	ok, mtype, err := lex.nextId()
 	if err != nil {
@@ -68,13 +67,6 @@ func MoleculeParse(lex *Lexer) *Molecule {
 		return nil
 	}
 	molecule.mtype = MoleculeTypeByString(mtype)
-	ok, err = lex.nextNL()
-	if err != nil {
-		return nil
-	}
-	if !ok {
-		return nil
-	}
 	ok, ctype, err := lex.nextId()
 	if err != nil {
 		return nil
@@ -89,15 +81,8 @@ func MoleculeParse(lex *Lexer) *Molecule {
 	if !ok {
 		return nil
 	}
-	molecule.mtype = MoleculeChargesByString(ctype)
+	molecule.ctype = MoleculeChargesByString(ctype)
 	ok, err = lex.nextAtom()
-	if err != nil {
-		return nil
-	}
-	if !ok {
-		return nil
-	}
-	ok, err = lex.nextNL()
 	if err != nil {
 		return nil
 	}
@@ -106,6 +91,16 @@ func MoleculeParse(lex *Lexer) *Molecule {
 	}
 	for i := 0; i < len(molecule.atoms); i ++ {
 		molecule.atoms[i] = *AtomParse(lex)
+	}
+	ok, err = lex.nextBond()
+	if err != nil {
+		return nil
+	}
+	if !ok {
+		return nil
+	}
+	for i := 0; i < len(molecule.bonds); i ++ {
+		molecule.bonds[i] = *BondParse(lex)
 	}
 
 	return molecule
