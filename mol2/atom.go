@@ -72,7 +72,7 @@ func (atom Atom) String() string {
 	return buffer
 }
 
-func AtomParse(lex *Lexer) *Atom {
+func atomParse(lex *Lexer) *Atom {
 	atom := new(Atom)
 	ok, id, err := lex.nextInt()
 	if err != nil {
@@ -122,12 +122,12 @@ func AtomParse(lex *Lexer) *Atom {
 		return nil
 	}
 	atom.atype = AtomTypeGetByString(atype)
-	atom.subst = AtomSubStructureParse(lex)
+	atom.subst = atomSubStructureParse(lex)
 
 	return atom
 }
 
-func AtomSubStructureParse(lex *Lexer) *AtomSubStructure {
+func atomSubStructureParse(lex *Lexer) *AtomSubStructure {
 	ok, err := lex.nextNL()
 	if ok {
 		return nil

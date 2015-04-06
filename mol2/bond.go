@@ -28,7 +28,7 @@ func (bond *Bond) String() string {
 	return buffer
 }
 
-func BondParse(lex *Lexer) *Bond {
+func bondParse(lex *Lexer) *Bond {
 	b := new(Bond)
 	ok, id, err := lex.nextInt()
 	if err != nil {

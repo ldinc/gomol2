@@ -27,7 +27,7 @@ func (mol *Molecule) String() string {
 	return buffer
 }
 
-func MoleculeParse(lex *Lexer) *Molecule {
+func moleculeParse(lex *Lexer) *Molecule {
 	molecule := new(Molecule)
 	ok, err := lex.nextMolecule()
 	if err != nil {
@@ -36,7 +36,7 @@ func MoleculeParse(lex *Lexer) *Molecule {
 	if !ok {
 		return nil
 	}
-	lex.SkipWS()
+	lex.skipWS()
 	molecule.name = lex.nextLine()
 	ok, length, err := lex.nextInt()
 	if err != nil {
@@ -90,7 +90,7 @@ func MoleculeParse(lex *Lexer) *Molecule {
 		return nil
 	}
 	for i := 0; i < len(molecule.atoms); i ++ {
-		molecule.atoms[i] = *AtomParse(lex)
+		molecule.atoms[i] = *atomParse(lex)
 	}
 	ok, err = lex.nextBond()
 	if err != nil {
@@ -100,7 +100,7 @@ func MoleculeParse(lex *Lexer) *Molecule {
 		return nil
 	}
 	for i := 0; i < len(molecule.bonds); i ++ {
-		molecule.bonds[i] = *BondParse(lex)
+		molecule.bonds[i] = *bondParse(lex)
 	}
 
 	return molecule

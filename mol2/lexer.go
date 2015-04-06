@@ -13,7 +13,7 @@ type Lexer struct {
 	column_new, line_new, pos_new int
 }
 
-func NewLexer(buffer []byte) *Lexer {
+func newLexer(buffer []byte) *Lexer {
 	lex := new(Lexer)
 	lex.line = 0
 	lex.column = 0
@@ -27,7 +27,7 @@ func (lex *Lexer) Coords() (int, int) {
 	return lex.line, lex.column
 }
 
-func (lex *Lexer) SkipWS() (bool, int) {
+func (lex *Lexer) skipWS() (bool, int) {
 	state := lex.pushState()
 	size := 0
 	r := lex.readRune()
@@ -109,7 +109,7 @@ func (lex *Lexer) popState(state *lexerState) {
 }
 
 func (lex *Lexer) nextPattern(pattern string) (bool, error) {
-	lex.SkipWS()
+	lex.skipWS()
 	state := lex.pushState()
 	err_text := "was expected " + pattern
 	ok, str, err := lex.nextId()
@@ -145,7 +145,7 @@ func (lex *Lexer) nextBond() (bool, error) {
 }
 
 func (lex *Lexer) nextId() (bool, string, error) {
-	lex.SkipWS()
+	lex.skipWS()
 	buf := ""
 	r := lex.readRune()
 	for unicode.IsSpace(r) == false {
@@ -190,7 +190,7 @@ func (lex *Lexer) nextNL() (bool, error) {
 }
 
 func (lex *Lexer) nextReal() (bool, float64, error) {
-	lex.SkipWS()
+	lex.skipWS()
 	state := lex.pushState()
 	err_text := "real was expected"
 	ok, id, _ := lex.nextId()
@@ -211,7 +211,7 @@ func (lex *Lexer) nextReal() (bool, float64, error) {
 }
 
 func (lex *Lexer) nextInt() (bool, int, error) {
-	lex.SkipWS()
+	lex.skipWS()
 	state := lex.pushState()
 	err_text := "int was expected"
 	ok, id, _ := lex.nextId()
