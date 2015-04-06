@@ -52,6 +52,8 @@ fmt.Println(mol)
 __Parsing from byte-slice__
 
 ```go
-mol, err := mol2.ParseText(filename)
+var buffer []byte
+...
+mol, err := mol2.ParseText(buffer)
 fmt.Println(mol)
 ```
