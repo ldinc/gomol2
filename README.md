@@ -41,7 +41,17 @@ Feature parsing:
 Install: `go get github.com/ldinc/gomol2/mol2`
 
 Example:
+
+__Parsing from file:__
+
 ```go
-mol := mol2.ParseFile(filename)
+mol, err := mol2.ParseFile(filename)
+fmt.Println(mol)
+```
+
+__Parsing from byte-slice__
+
+```go
+mol, err := mol2.ParseText(filename)
 fmt.Println(mol)
 ```
