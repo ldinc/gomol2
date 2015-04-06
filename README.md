@@ -4,6 +4,8 @@ Go MOL2 simple parser
 # Description
 Simple Go package for parsing [Tripos Mol2 File Format](http://www.tripos.com/data/support/mol2.pdf).
 
+[GoMOL2 Wiki](https://github.com/ldinc/gomol2/wiki)
+
 Feature parsing:
 
 1. Atom
