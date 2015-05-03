@@ -1,5 +1,8 @@
 package mol2
 
+//import "fmt"
+import "bytes"
+
 type Molecule struct {
 	name string
 	mtype, ctype byte
@@ -7,24 +10,67 @@ type Molecule struct {
 	bonds []Bond
 }
 
+//http://stackoverflow.com/questions/1760757/how-to-efficiently-concatenate-strings-in-go
 func (mol *Molecule) String() string {
 	if mol == nil {
 		return "empty molecule"
 	}
-	buffer := ""
+/*	buffer := ""
 	buffer += "molecule [" + mol.name + "]\n"
 	buffer += "type: " + MoleculeTypeToString(mol.mtype) + "\n"
 	buffer += "charge type: " + MoleculeChargesToString(mol.ctype) + "\n"
 	buffer += "atoms:\n"
-	for _, atom := range mol.atoms {
-		buffer += atom.String() + "\n"
+	for i := 0; i < len(mol.atoms); i++ {
+		fmt.Println(i)
+		buffer += mol.atoms[i].String() + "\n"
 	}
 	buffer += "bonds:\n"
-	for _, bond := range mol.bonds {
-		buffer += bond.String() + "\n"
+	for i := 0; i < len(mol.bonds); i++ {
+		buffer += mol.bonds[i].String() + "\n"
 	}
 
 	return buffer
+*/
+/*	buffer := make([]byte, 2048)
+	bpos := copy(buffer[:], []byte("molecule ["))
+	bpos += copy(buffer[bpos:], []byte(mol.name))
+	bpos += copy(buffer[bpos:], []byte("]\ntype: " + MoleculeTypeToString(mol.mtype) + "\n" ))
+	bpos += copy(buffer[bpos:], []byte("charge type: " + MoleculeChargesToString(mol.ctype) + "\n" ))
+	bpos += copy(buffer[bpos:], []byte("atoms:\n"))
+	for i := 0; i < len(mol.atoms); i++ {
+			//fmt.Println(mol.atoms[i].String())
+		bpos += copy(buffer[bpos:], []byte(mol.atoms[i].String() + "\n"))
+		bpos += copy(buffer[bpos:], []byte("\n"))
+	}
+*/
+	var buf bytes.Buffer
+	buf.WriteString("molecule [" + mol.name + "]\n")
+	buf.WriteString("type: " + MoleculeTypeToString(mol.mtype) + "\n")
+	buf.WriteString("charge type: " + MoleculeChargesToString(mol.ctype) + "\n")
+	buf.WriteString("atoms:\n")
+	for i := 0; i < len(mol.atoms); i++ {
+		buf.WriteString("\t");
+		buf.WriteString(mol.atoms[i].String())
+		buf.WriteString("\n")
+	}
+	buf.WriteString("bonds:\n")
+	for i := 0; i < len(mol.bonds[i].String()); i++ {
+		buf.WriteString("\t");
+		buf.WriteString(mol.bonds[i].String())
+		buf.WriteString("\n")
+	}
+/*
+	buffer := ""
+	buffer = append(buffer, "molecule [" + mol.name + "]\n")
+	buffer = append(buffer, "type: " + MoleculeTypeToString(mol.mtype) + "\n" )
+	buffer = append(buffer, "charge type: " + MoleculeChargesToString(mol.ctype) + "\n" )
+	buffer = append(buffer, "atoms:\n")
+	for i := 0; i < len(mol.atoms); i++ {
+		buffer = append(buffer, mol.atoms[i].String() + "\n")
+	}
+	return buffer
+*/
+	return buf.String()
 }
 
 func moleculeParse(lex *Lexer) *Molecule {

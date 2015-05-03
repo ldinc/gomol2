@@ -1,6 +1,7 @@
 package mol2
 
 import (
+	"bytes"
 	"strconv"
 )
 
@@ -23,7 +24,7 @@ type AtomSubStatus byte
 
 const (
 	DSPMOD    AtomSubStatus = 1 << iota
-	TYPECOL   AtomSubStatus = 1<< iota
+	TYPECOL   AtomSubStatus = 1 << iota
 	CAP       AtomSubStatus = 1 << iota
 	BACKBONE  AtomSubStatus = 1 << iota
 	DICT      AtomSubStatus = 1 << iota
@@ -49,14 +50,14 @@ func (subst *AtomSubStructure) String() string {
 	if subst == nil {
 			return "none"
 	}
-	buffer := ""
-	buffer += "{id = " + strconv.FormatInt(int64(subst.id), 10) + "; "
-	buffer += "name = " + subst.name + "; "
-	buffer += "charge = " + strconv.FormatFloat(subst.charge, 'e', -1, 64)
+	var buf bytes.Buffer
+	buf.WriteString("{id = " + strconv.FormatInt(int64(subst.id), 10) + "; ")
+	buf.WriteString("name = " + subst.name + "; ")
+	buf.WriteString("charge = " + strconv.FormatFloat(subst.charge, 'e', -1, 64))
 	// TODO: add status to display
-	buffer += "}"
+	buf.WriteString("}")
 
-	return buffer
+	return buf.String()
 }
 
 func (atom Atom) String() string {

@@ -1,6 +1,9 @@
 package mol2
 
-import "strconv"
+import (
+	"bytes"
+	"strconv"
+)
 
 type Bond struct {
 	id int
@@ -9,7 +12,7 @@ type Bond struct {
 	btype byte
 	/*
 	 * TODO: add supporting for status_bit
-	 * now, it is ignored
+	 * at current, it is ignored
 	 */
 	status byte
 }
@@ -18,14 +21,13 @@ func (bond *Bond) String() string {
 	if bond == nil {
 		return "nil"
 	}
-	buffer := ""
-	buffer += "[" + strconv.FormatInt(int64(bond.id), 10) + "]"
-	buffer += "(" + strconv.FormatInt(int64(bond.origin), 10) + ")"
-	buffer += "->(" + strconv.FormatInt(int64(bond.target), 10) + ")"
-	buffer += "{" + BondTypeToString(bond.btype) + "}"
+	var buf bytes.Buffer
+	buf.WriteString("[" + strconv.FormatInt(int64(bond.id), 10) + "]")
+	buf.WriteString("(" + strconv.FormatInt(int64(bond.origin), 10) + ")")
+	buf.WriteString("->(" + strconv.FormatInt(int64(bond.target), 10) + ")")
+	buf.WriteString("{" + BondTypeToString(bond.btype) + "}")
 
-
-	return buffer
+	return buf.String()
 }
 
 func bondParse(lex *Lexer) *Bond {
