@@ -6,18 +6,18 @@ import (
 )
 
 type Atom struct {
-	id int
-	name string
-	x, y, z float64
-	atype int
-	subst *AtomSubStructure
+	Id int
+	Name string
+	X, Y, Z float64
+	Type int
+	Subst *AtomSubStructure
 }
 
 type AtomSubStructure struct {
-	id int
-	name string
-	charge float64
-	status AtomSubStatus
+	Id int
+	Name string
+	Charge float64
+	Status AtomSubStatus
 }
 
 type AtomSubStatus byte
@@ -38,10 +38,10 @@ func NewAtomSubStructure(id int,
                          charge float64,
                          status AtomSubStatus) *AtomSubStructure {
 	sub := new(AtomSubStructure)
-	sub.status = status
-	sub.name = name
-	sub.charge = charge
-	sub.id = id
+	sub.Status = status
+	sub.Name = name
+	sub.Charge = charge
+	sub.Id = id
 
 	return sub
 }
@@ -51,9 +51,9 @@ func (subst *AtomSubStructure) String() string {
 			return "none"
 	}
 	var buf bytes.Buffer
-	buf.WriteString("{id = " + strconv.FormatInt(int64(subst.id), 10) + "; ")
-	buf.WriteString("name = " + subst.name + "; ")
-	buf.WriteString("charge = " + strconv.FormatFloat(subst.charge, 'e', -1, 64))
+	buf.WriteString("{id = " + strconv.FormatInt(int64(subst.Id), 10) + "; ")
+	buf.WriteString("name = " + subst.Name + "; ")
+	buf.WriteString("charge = " + strconv.FormatFloat(subst.Charge, 'e', -1, 64))
 	// TODO: add status to display
 	buf.WriteString("}")
 
@@ -62,13 +62,13 @@ func (subst *AtomSubStructure) String() string {
 
 func (atom Atom) String() string {
 	buffer := ""
-	buffer += strconv.FormatInt(int64(atom.id), 10)
-	buffer += " [" + atom.name + "]["
-	buffer += strconv.FormatFloat(atom.x, 'e', -1, 64) + ","
-	buffer += strconv.FormatFloat(atom.y, 'e', -1, 64) + ","
-	buffer += strconv.FormatFloat(atom.z, 'e', -1, 64) + "]"
-	buffer += ": " + AtomTypeToString(atom.atype) + " "
-	buffer += "subst = " + atom.subst.String()
+	buffer += strconv.FormatInt(int64(atom.Id), 10)
+	buffer += " [" + atom.Name + "]["
+	buffer += strconv.FormatFloat(atom.X, 'e', -1, 64) + ","
+	buffer += strconv.FormatFloat(atom.Y, 'e', -1, 64) + ","
+	buffer += strconv.FormatFloat(atom.Z, 'e', -1, 64) + "]"
+	buffer += ": " + AtomTypeToString(atom.Type) + " "
+	buffer += "subst = " + atom.Subst.String()
 
 	return buffer
 }
@@ -82,7 +82,7 @@ func atomParse(lex *Lexer) *Atom {
 	if !ok {
 		return nil
 	}
-	atom.id = id
+	atom.Id = id
 	ok, name, err := lex.nextId()
 	if err != nil {
 		panic(err)
@@ -90,7 +90,7 @@ func atomParse(lex *Lexer) *Atom {
 	if !ok {
 		return nil
 	}
-	atom.name = name
+	atom.Name = name
 	ok, f, err := lex.nextReal()
 	if err != nil {
 		panic(err)
@@ -98,7 +98,7 @@ func atomParse(lex *Lexer) *Atom {
 	if !ok {
 			return nil
 	}
-	atom.x = f;
+	atom.X = f;
 	ok, f, err = lex.nextReal()
 	if err != nil {
 		panic(err)
@@ -106,7 +106,7 @@ func atomParse(lex *Lexer) *Atom {
 	if !ok {
 			return nil
 	}
-	atom.y = f;
+	atom.Y = f;
 	ok, f, err = lex.nextReal()
 	if err != nil {
 		panic(err)
@@ -114,7 +114,7 @@ func atomParse(lex *Lexer) *Atom {
 	if !ok {
 			return nil
 	}
-	atom.z = f;
+	atom.Z = f;
 	ok, atype, err := lex.nextId()
 	if err != nil {
 		panic(err)
@@ -122,8 +122,8 @@ func atomParse(lex *Lexer) *Atom {
 	if !ok {
 		return nil
 	}
-	atom.atype = AtomTypeGetByString(atype)
-	atom.subst = atomSubStructureParse(lex)
+	atom.Type = AtomTypeGetByString(atype)
+	atom.Subst = atomSubStructureParse(lex)
 
 	return atom
 }

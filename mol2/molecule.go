@@ -4,10 +4,10 @@ package mol2
 import "bytes"
 
 type Molecule struct {
-	name string
-	mtype, ctype byte
-	atoms []Atom
-	bonds []Bond
+	Name string
+	MType, CType byte
+	Atoms []Atom
+	Bonds []Bond
 }
 
 func (mol *Molecule) String() string {
@@ -16,19 +16,19 @@ func (mol *Molecule) String() string {
 	}
 
 	var buf bytes.Buffer
-	buf.WriteString("molecule [" + mol.name + "]\n")
-	buf.WriteString("type: " + MoleculeTypeToString(mol.mtype) + "\n")
-	buf.WriteString("charge type: " + MoleculeChargesToString(mol.ctype) + "\n")
+	buf.WriteString("molecule [" + mol.Name + "]\n")
+	buf.WriteString("type: " + MoleculeTypeToString(mol.MType) + "\n")
+	buf.WriteString("charge type: " + MoleculeChargesToString(mol.CType) + "\n")
 	buf.WriteString("atoms:\n")
-	for i := 0; i < len(mol.atoms); i++ {
+	for i := 0; i < len(mol.Atoms); i++ {
 		buf.WriteString("\t");
-		buf.WriteString(mol.atoms[i].String())
+		buf.WriteString(mol.Atoms[i].String())
 		buf.WriteString("\n")
 	}
 	buf.WriteString("bonds:\n")
-	for i := 0; i < len(mol.bonds[i].String()); i++ {
+	for i := 0; i < len(mol.Bonds); i++ {
 		buf.WriteString("\t");
-		buf.WriteString(mol.bonds[i].String())
+		buf.WriteString(mol.Bonds[i].String())
 		buf.WriteString("\n")
 	}
 
@@ -45,7 +45,7 @@ func moleculeParse(lex *Lexer) *Molecule {
 		return nil
 	}
 	lex.skipWS()
-	molecule.name = lex.nextLine()
+	molecule.Name = lex.nextLine()
 	ok, length, err := lex.nextInt()
 	if err != nil {
 		panic(err)
@@ -53,7 +53,7 @@ func moleculeParse(lex *Lexer) *Molecule {
 	if !ok {
 		return nil
 	}
-	molecule.atoms = make([]Atom, length)
+	molecule.Atoms = make([]Atom, length)
 	ok, length, err = lex.nextInt()
 	if err != nil {
 		panic(err)
@@ -61,7 +61,7 @@ func moleculeParse(lex *Lexer) *Molecule {
 	if !ok {
 		return nil
 	}
-	molecule.bonds = make([]Bond, length)
+	molecule.Bonds = make([]Bond, length)
 	// TODO: parse other
 	lex.nextInt()
 	lex.nextInt()
@@ -74,7 +74,7 @@ func moleculeParse(lex *Lexer) *Molecule {
 	if !ok {
 		return nil
 	}
-	molecule.mtype = MoleculeTypeByString(mtype)
+	molecule.MType = MoleculeTypeByString(mtype)
 	ok, ctype, err := lex.nextId()
 	if err != nil {
 		return nil
@@ -89,7 +89,7 @@ func moleculeParse(lex *Lexer) *Molecule {
 	if !ok {
 		return nil
 	}
-	molecule.ctype = MoleculeChargesByString(ctype)
+	molecule.CType = MoleculeChargesByString(ctype)
 	ok, err = lex.nextAtom()
 	if err != nil {
 		return nil
@@ -97,8 +97,8 @@ func moleculeParse(lex *Lexer) *Molecule {
 	if !ok {
 		return nil
 	}
-	for i := 0; i < len(molecule.atoms); i ++ {
-		molecule.atoms[i] = *atomParse(lex)
+	for i := 0; i < len(molecule.Atoms); i ++ {
+		molecule.Atoms[i] = *atomParse(lex)
 	}
 	ok, err = lex.nextBond()
 	if err != nil {
@@ -107,8 +107,8 @@ func moleculeParse(lex *Lexer) *Molecule {
 	if !ok {
 		return nil
 	}
-	for i := 0; i < len(molecule.bonds); i ++ {
-		molecule.bonds[i] = *bondParse(lex)
+	for i := 0; i < len(molecule.Bonds); i ++ {
+		molecule.Bonds[i] = *bondParse(lex)
 	}
 
 	return molecule

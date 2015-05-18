@@ -6,15 +6,15 @@ import (
 )
 
 type Bond struct {
-	id int
-	origin int
-	target int
-	btype byte
+	Id int
+	Origin int
+	Target int
+	Type byte
 	/*
 	 * TODO: add supporting for status_bit
 	 * at current, it is ignored
 	 */
-	status byte
+	Status byte
 }
 
 func (bond *Bond) String() string {
@@ -22,10 +22,10 @@ func (bond *Bond) String() string {
 		return "nil"
 	}
 	var buf bytes.Buffer
-	buf.WriteString("[" + strconv.FormatInt(int64(bond.id), 10) + "]")
-	buf.WriteString("(" + strconv.FormatInt(int64(bond.origin), 10) + ")")
-	buf.WriteString("->(" + strconv.FormatInt(int64(bond.target), 10) + ")")
-	buf.WriteString("{" + BondTypeToString(bond.btype) + "}")
+	buf.WriteString("[" + strconv.FormatInt(int64(bond.Id), 10) + "]")
+	buf.WriteString("(" + strconv.FormatInt(int64(bond.Origin), 10) + ")")
+	buf.WriteString("->(" + strconv.FormatInt(int64(bond.Target), 10) + ")")
+	buf.WriteString("{" + BondTypeToString(bond.Type) + "}")
 
 	return buf.String()
 }
@@ -39,7 +39,7 @@ func bondParse(lex *Lexer) *Bond {
 	if !ok {
 		return nil
 	}
-	b.id = id
+	b.Id = id
 	ok, origin, err := lex.nextInt()
 	if err != nil {
 		panic(err)
@@ -47,7 +47,7 @@ func bondParse(lex *Lexer) *Bond {
 	if !ok {
 		return nil
 	}
-	b.origin = origin
+	b.Origin = origin
 	ok, target, err := lex.nextInt()
 	if err != nil {
 		panic(err)
@@ -55,7 +55,7 @@ func bondParse(lex *Lexer) *Bond {
 	if !ok {
 		return nil
 	}
-	b.target = target
+	b.Target = target
 	ok, btype, err := lex.nextId()
 	if err != nil {
 		panic(err)
@@ -63,7 +63,7 @@ func bondParse(lex *Lexer) *Bond {
 	if !ok {
 		return nil
 	}
-	b.btype = BondTypeByString(btype)
+	b.Type = BondTypeByString(btype)
 
 	return b
 }
